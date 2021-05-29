@@ -1,6 +1,7 @@
 package ru.skillbranch.kotlinexample
 
 import androidx.annotation.VisibleForTesting
+import ru.skillbranch.kotlinexample.extensions.findPhone
 
 object UserHolder {
     private val map = mutableMapOf<String, User>()
@@ -26,14 +27,20 @@ object UserHolder {
             else map[user.login] = user }
     }
     fun requestAccessCode(rawPhone: String){
-        map[rawPhone]?.updateAccessCode()
+        map[cleanLogin(rawPhone)]?.updateAccessCode()
     }
 
     fun loginUser (login: String, password: String) : String?{
-        return map[login.trim()]?.run {
+        return map[cleanLogin(login)]?.run {
             if (checkPassword(password)) this.userInfo
             else null
         }
+    }
+    fun cleanLogin(login: String): String = login.trim().let {
+            if (it.replace("[^0-9]".toRegex(), "").length == 11)
+                it.findPhone()
+            else it
+
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)

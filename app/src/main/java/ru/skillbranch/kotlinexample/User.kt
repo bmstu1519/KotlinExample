@@ -1,6 +1,7 @@
 package ru.skillbranch.kotlinexample
 
 import androidx.annotation.VisibleForTesting
+import ru.skillbranch.kotlinexample.extensions.findPhone
 import java.math.BigInteger
 import java.security.MessageDigest
 import java.security.SecureRandom
@@ -29,7 +30,7 @@ class User private constructor(
         set(value){
             value?.let {
                 if (phoneErrors(value)) {
-                    field = isCorrectPhone(value)
+                    field = value.findPhone()
                 } else
                     throw IllegalArgumentException("Enter a valid phone number starting with a + and containing 11 digits")
             }
@@ -152,12 +153,10 @@ class User private constructor(
                 else -> throw IllegalArgumentException("Email or phone cant be null or blank")
             }
         }
-        fun phoneErrors(rawPhone: String) : Boolean {
-            val phone = isCorrectPhone(rawPhone)
-            return phone.matches("\\+\\d{11}".toRegex())
-        }
-        fun isCorrectPhone(rawPhone: String): String = rawPhone.replace("[^+\\d]".toRegex(), "")
+        fun phoneErrors(rawPhone: String) : Boolean =
+            rawPhone.findPhone().matches("\\+\\d{11}".toRegex())
 
+//        fun isCorrectPhone(rawPhone: String): String = rawPhone.replace("[^+\\d]".toRegex(), "")
 
         private fun String.fullNameToPair(): Pair<String, String?>{
             return this.split(" ")
