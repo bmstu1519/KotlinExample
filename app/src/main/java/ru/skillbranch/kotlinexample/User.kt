@@ -26,9 +26,16 @@ class User private constructor(
         .joinToString (" ")
 
     private var phone: String? = null
-    set(value){
-        field = value?.replace("[^+\\d]".toRegex(), "")
-    }
+        set(value){
+            value?.let {
+                if (phoneErrors(value)) {
+                    field = isCorrectPhone(value)
+                } else
+                    throw IllegalArgumentException("Enter a valid phone number starting with a + and containing 11 digits")
+            }
+
+        }
+
     private var _login: String? = null
     internal var login: String
     set(value) {
@@ -62,10 +69,15 @@ class User private constructor(
         rawPhone: String
     ): this(firstName, lastName, rawPhone = rawPhone,meta = mapOf("auth" to "sms")){
         println("Secondary phone constructor")
+        updateAccessCode()
+    }
+
+    fun updateAccessCode(){
         val code = generateAccessCode()
         passwordHash = encrypt(code)
         accessCode = code
-        sendAccessCodeToUser(rawPhone,code)
+        println(code)
+        sendAccessCodeToUser(phone!!,code)
     }
 
     init {
@@ -88,6 +100,8 @@ class User private constructor(
             meta: $meta
             """.trimIndent()
     }
+
+
 
     fun checkPassword(pass: String) = encrypt(pass) == passwordHash //проверка введеного пароля пользователем
 
@@ -133,11 +147,17 @@ class User private constructor(
 
             //создается пользователь по конструктору, в зависимости какие данные были указаны
             return when{
-                !phone.isNullOrBlank() -> User(firstName, lastName)
+                !phone.isNullOrBlank() -> User(firstName, lastName, rawPhone = phone)
                 !email.isNullOrBlank() && !password.isNullOrBlank() -> User(firstName, lastName, email, password)
                 else -> throw IllegalArgumentException("Email or phone cant be null or blank")
             }
         }
+        fun phoneErrors(rawPhone: String) : Boolean {
+            val phone = isCorrectPhone(rawPhone)
+            return phone.matches("\\+\\d{11}".toRegex())
+        }
+        fun isCorrectPhone(rawPhone: String): String = rawPhone.replace("[^+\\d]".toRegex(), "")
+
 
         private fun String.fullNameToPair(): Pair<String, String?>{
             return this.split(" ")

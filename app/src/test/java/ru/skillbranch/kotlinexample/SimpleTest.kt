@@ -10,6 +10,14 @@ class SimpleTest {
     fun after(){
         UserHolder.clearHolder()
     }
+    @Test
+    fun errors(){
+        val holder = UserHolder
+//        val login = "+7 (917) 971-11-11".replace("[^+\\d]".toRegex(), "")
+//        println("$login "+ login.matches("\\+\\d{11}".toRegex()))
+//        val error = holder.phoneErrors("+7 (917) 971-11-11")
+//        println(error)
+    }
 
     @Test
     fun register_user_success() {

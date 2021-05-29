@@ -62,10 +62,10 @@ class ExampleUnitTest {
         holder.registerUser("John Doe", "John_Doe@unknown.com","testPass")
     }
 
-    /*@Test
+    @Test
     fun register_user_by_phone_success() {
         val holder = UserHolder
-        val user = holder.registerUserByPhone("John Doe", "+7 (917) 971 11-11")
+        val user = holder.registerUserByPhone("John Doe", "+7 (917) 971-11-11")
         val expectedInfo = """
             firstName: John
             lastName: Doe
@@ -99,7 +99,7 @@ class ExampleUnitTest {
         val holder = UserHolder
         holder.registerUserByPhone("John Doe", "+7 (917) 971-11-11")
         holder.registerUserByPhone("John Doe", "+7 (917) 971-11-11")
-    }*/
+    }
 
     @Test
     fun login_user_success() {
@@ -121,7 +121,7 @@ class ExampleUnitTest {
         Assert.assertEquals(expectedInfo, successResult)
     }
 
-    /*@Test
+    @Test
     fun login_user_by_phone_success() {
         val holder = UserHolder
         val user = holder.registerUserByPhone("John Doe", "+7 (917) 971-11-11")
@@ -136,10 +136,10 @@ class ExampleUnitTest {
             meta: {auth=sms}
         """.trimIndent()
 
-        val successResult =  holder.loginUser("+7 (917) 971-11-11", user.accessCode!!)
+        val successResult = holder.loginUser("+7 (917) 971-11-11", user.accessCode!!)
 
         Assert.assertEquals(expectedInfo, successResult)
-    }*/
+    }
 
     @Test
     fun login_user_fail() {
@@ -161,7 +161,7 @@ class ExampleUnitTest {
         Assert.assertNull(failResult)
     }
 
-    /*@Test
+    @Test
     fun request_access_code() {
         val holder = UserHolder
         val user = holder.registerUserByPhone("John Doe", "+7 (917) 971-11-11")
@@ -179,9 +179,9 @@ class ExampleUnitTest {
             meta: {auth=sms}
         """.trimIndent()
 
-        val successResult =  holder.loginUser("+7 (917) 971-11-11", user.accessCode!!)
+        val successResult = holder.loginUser("+7 (917) 971-11-11", user.accessCode!!)
 
         Assert.assertNotEquals(oldAccess, user.accessCode!!)
         Assert.assertEquals(expectedInfo, successResult)
-    }*/
+    }
 }

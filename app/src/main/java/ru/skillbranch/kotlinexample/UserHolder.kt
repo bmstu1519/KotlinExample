@@ -11,9 +11,22 @@ object UserHolder {
         password: String
     ): User{
         return User.makeUser(fullName, email=email, password=password)
-            .also { user -> if (map.containsKey(user.login))
-                throw IllegalArgumentException("A user with this email already exists")
-                else map[user.login] = user }
+            .also { user -> if(map.containsKey(user.login))
+            throw IllegalArgumentException("A user with this email already exists")
+        else map[user.login] = user }
+    }
+
+    fun registerUserByPhone(
+        fullName: String,
+        rawPhone: String
+    ): User{
+        return User.makeUser(fullName, phone = rawPhone).also {
+                user -> if(map.containsKey(user.login))
+            throw IllegalArgumentException("A user with this phone already exists")
+            else map[user.login] = user }
+    }
+    fun requestAccessCode(rawPhone: String){
+        map[rawPhone]?.updateAccessCode()
     }
 
     fun loginUser (login: String, password: String) : String?{
@@ -27,5 +40,7 @@ object UserHolder {
     fun clearHolder(){
         map.clear()
     }
+
+
 
 }
