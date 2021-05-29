@@ -16,13 +16,13 @@ class User private constructor(
 ){
     val userInfo: String
     private val fullName: String
-    get() = listOfNotNull(firstName,lastName)
-        .joinToString(" ")
-        .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+        get() = listOfNotNull(firstName, lastName)
+            .joinToString(" ")
+            .capitalize()
 
     private val initials: String
     get() = listOfNotNull(firstName,lastName)
-        .map { it.first().uppercaseChar() }
+        .map { it.first().toUpperCase() }
         .joinToString (" ")
 
     private var phone: String? = null
@@ -38,10 +38,10 @@ class User private constructor(
 
     private var _login: String? = null
     internal var login: String
-    set(value) {
-        _login = value?.lowercase(Locale.getDefault())
-    }
-    get() = _login!!
+        get() = _login!!
+        set(value) {
+            _login = value.toLowerCase()
+        }
 
     private val salt: String by lazy{
         ByteArray(16).also { SecureRandom().nextBytes(it) }.toString()
