@@ -49,7 +49,7 @@ object UserHolder {
         val userList = mutableListOf<User>()
 
         for (value in list){
-            val fullString: List<String> = value.trim().split(";")
+            val fullString: List<String> = value.split(";")
             val (firstName,lastName) = fullString[0].fullNameToPair()
             val email = if (fullString[1].isEmpty()) null else fullString[1]
             //порядок диструктивного присваивания важен, т.к salt, каки lastName может быть null
