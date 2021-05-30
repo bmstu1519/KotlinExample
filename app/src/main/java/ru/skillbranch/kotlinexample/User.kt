@@ -94,6 +94,9 @@ class User private constructor(
     init {
         println("First init block, primary constructor was called")
 
+        if (salt == null)
+            salt = ByteArray(16).also { SecureRandom().nextBytes(it) }.toString()
+
         check(!firstName.isBlank()) {"First Name must not be blank"}
         check(email.isNullOrBlank() || rawPhone.isNullOrBlank()) {"Email or phone must not be blank"}
 
