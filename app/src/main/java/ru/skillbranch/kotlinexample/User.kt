@@ -2,6 +2,8 @@ package ru.skillbranch.kotlinexample
 
 import androidx.annotation.VisibleForTesting
 import ru.skillbranch.kotlinexample.extensions.findPhone
+import ru.skillbranch.kotlinexample.extensions.fullNameToPair
+import ru.skillbranch.kotlinexample.extensions.md5
 import java.math.BigInteger
 import java.security.MessageDigest
 import java.security.SecureRandom
@@ -44,15 +46,12 @@ class User private constructor(
             _login = value.toLowerCase()
         }
 
-    private val salt: String by lazy{
-        ByteArray(16).also { SecureRandom().nextBytes(it) }.toString()
-    }
+    private var salt: String? = null
     private lateinit var passwordHash: String
 
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)//VisibleForTesting.NONE - в продакшн коде метод не будет виден вообще
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     var accessCode: String? = null
 
-    //for email
     constructor(
         firstName: String,
         lastName: String?,
@@ -63,7 +62,6 @@ class User private constructor(
         passwordHash = encrypt(password)
 
     }
-    //for phone
     constructor(
         firstName: String,
         lastName: String?,
@@ -71,6 +69,18 @@ class User private constructor(
     ): this(firstName, lastName, rawPhone = rawPhone,meta = mapOf("auth" to "sms")){
         println("Secondary phone constructor")
         updateAccessCode()
+    }
+
+    constructor(
+        firstName: String,
+        lastName: String?,
+        email : String?,
+        salt : String?,
+        passwordHash : String,
+        rawPhone: String?
+    ): this(firstName, lastName, email, rawPhone, meta = mapOf("src" to "csv")){
+        this.salt = salt
+        this.passwordHash = passwordHash
     }
 
     fun updateAccessCode(){
@@ -102,8 +112,6 @@ class User private constructor(
             """.trimIndent()
     }
 
-
-
     fun checkPassword(pass: String) = encrypt(pass) == passwordHash //проверка введеного пароля пользователем
 
     fun changePassword(oldPass: String, newPass: String){
@@ -130,13 +138,6 @@ class User private constructor(
         println("..... sending access code: $code on $phone")
     }
 
-    private fun String.md5() : String{
-        val md = MessageDigest.getInstance("MD5")
-        val digest = md.digest(toByteArray()) // 16 byte
-        val hexString = BigInteger(1, digest).toString(16)
-        return hexString.padStart(32,'0')
-    }
-
     companion object Factory{
         fun makeUser(
             fullName: String,
@@ -146,7 +147,6 @@ class User private constructor(
         ): User{
             val (firstName, lastName) = fullName.fullNameToPair()
 
-            //создается пользователь по конструктору, в зависимости какие данные были указаны
             return when{
                 !phone.isNullOrBlank() -> User(firstName, lastName, rawPhone = phone)
                 !email.isNullOrBlank() && !password.isNullOrBlank() -> User(firstName, lastName, email, password)
@@ -155,20 +155,5 @@ class User private constructor(
         }
         fun phoneErrors(rawPhone: String) : Boolean =
             rawPhone.findPhone().matches("\\+\\d{11}".toRegex())
-
-//        fun isCorrectPhone(rawPhone: String): String = rawPhone.replace("[^+\\d]".toRegex(), "")
-
-        private fun String.fullNameToPair(): Pair<String, String?>{
-            return this.split(" ")
-                .filter { it.isNotBlank() }
-                .run{
-                    when(size){
-                        1 -> first() to null
-                        2-> first() to last()
-                        else -> throw IllegalArgumentException("only first name and last name or both," +
-                                " current split result ${this@fullNameToPair}")
-                    }
-                }
-        }
     }
 }

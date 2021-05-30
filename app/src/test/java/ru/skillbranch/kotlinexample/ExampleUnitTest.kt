@@ -184,4 +184,24 @@ class ExampleUnitTest {
         Assert.assertNotEquals(oldAccess, user.accessCode!!)
         Assert.assertEquals(expectedInfo, successResult)
     }
+
+    @Test
+    fun csvParse(){
+        val list: List<String> = listOf(" John Doe ;JohnDoe@unknow.com;[B@7591083d:c6adb4becdc64e92857e1e2a0fd6af84;;")
+        val holder = UserHolder
+        val user = holder.importUsers(list)
+
+        val expectedInfo ="""
+            firstName: John
+            lastName: Doe
+            login: johndoe@unknow.com
+            fullName: John Doe
+            initials: J D
+            email: JohnDoe@unknow.com
+            phone: null
+            meta: {src=csv}
+        """.trimIndent()
+
+        Assert.assertEquals(expectedInfo, user.joinToString { it.userInfo })
+    }
 }
