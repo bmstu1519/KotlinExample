@@ -18,9 +18,16 @@ fun String.fullNameToPair(delimiter: String = " "): Pair<String, String?>{
         }
 }
 
-fun String.md5() : String{
-    val md = MessageDigest.getInstance("MD5")
-    val digest = md.digest(toByteArray()) // 16 byte
-    val hexString = BigInteger(1, digest).toString(16)
-    return hexString.padStart(32,'0')
+
+fun <T>List<T>.dropLastUntil(predicate: (T) -> Boolean): List<T>{
+    val mutableList = this.toMutableList()
+    var removeElement: T
+    //в it сохраняется удаленный элемент
+    do {
+        removeElement = mutableList.removeAt(mutableList.size - 1)
+    //до тех пор пока в списке listOf(1, 2, 3,4,5).dropLastUntil { it == 2 } не будет найден эл-т
+    }while (!predicate.invoke(removeElement)) //{ removeElement == 2 }
+
+    return mutableList
+
 }
