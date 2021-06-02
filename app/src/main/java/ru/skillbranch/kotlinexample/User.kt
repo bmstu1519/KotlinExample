@@ -3,7 +3,6 @@ package ru.skillbranch.kotlinexample
 import androidx.annotation.VisibleForTesting
 import ru.skillbranch.kotlinexample.extensions.findPhone
 import ru.skillbranch.kotlinexample.extensions.fullNameToPair
-import ru.skillbranch.kotlinexample.extensions.md5
 import java.math.BigInteger
 import java.security.MessageDigest
 import java.security.SecureRandom
@@ -135,6 +134,12 @@ class User private constructor(
             }
         }.toString()
 
+    }
+    private fun String.md5() : String{
+        val md = MessageDigest.getInstance("MD5")
+        val digest = md.digest(toByteArray()) // 16 byte
+        val hexString = BigInteger(1, digest).toString(16)
+        return hexString.padStart(32,'0')
     }
 
     private fun sendAccessCodeToUser(phone: String, code: String) {
